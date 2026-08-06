@@ -25,9 +25,12 @@
         </div>
 
         <div class="header-actions">
+          <button class="btn" id="btn-shortcuts" style="padding: 6px 12px; font-size: 0.78rem;">
+            <kbd>⌘K</kbd> Shortcuts
+          </button>
           <div class="status-pill">
             <span class="status-dot"></span>
-            <span>60 FPS</span>
+            <span id="header-fps">60 FPS</span>
           </div>
           <a href="https://github.com/chukwusuccess/2d-physics-engine" target="_blank" rel="noopener" class="btn" style="padding: 6px 12px; font-size: 0.78rem;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -167,6 +170,42 @@
             <button class="hud-btn" id="btn-flip-g">🔄 Invert G</button>
           </div>
         </main>
+      </div>
+
+      <!-- Keyboard Shortcuts Modal -->
+      <div class="command-overlay" id="command-overlay">
+        <div class="command-modal">
+          <div class="command-header">
+            <span class="command-title">Keyboard Shortcuts</span>
+            <button class="btn" id="btn-close-shortcuts" style="padding: 4px 8px; font-size: 0.75rem;">Esc</button>
+          </div>
+          <div class="command-list">
+            <div class="command-item">
+              <span>Left Click + Drag</span>
+              <kbd>Drag / Throw Body</kbd>
+            </div>
+            <div class="command-item">
+              <span>Pause / Resume Simulation</span>
+              <kbd>Space</kbd>
+            </div>
+            <div class="command-item">
+              <span>Clear All Bodies</span>
+              <kbd>C</kbd>
+            </div>
+            <div class="command-item">
+              <span>Invert Gravity</span>
+              <kbd>G</kbd>
+            </div>
+            <div class="command-item">
+              <span>Toggle Slow Motion</span>
+              <kbd>S</kbd>
+            </div>
+            <div class="command-item">
+              <span>Open Shortcuts Command Palette</span>
+              <kbd>⌘K</kbd>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

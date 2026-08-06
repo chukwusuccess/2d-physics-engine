@@ -25,9 +25,26 @@ const renderOptions: RenderOptions = {
 
 // UI Elements
 const fpsEl = document.getElementById('stat-fps')!;
+const headerFpsEl = document.getElementById('header-fps')!;
 const bodiesEl = document.getElementById('stat-bodies')!;
 const collisionsEl = document.getElementById('stat-collisions')!;
 const timeEl = document.getElementById('stat-time')!;
+const commandOverlay = document.getElementById('command-overlay')!;
+
+// Shortcuts Modal logic
+function openShortcuts() {
+  commandOverlay.classList.add('open');
+}
+function closeShortcuts() {
+  commandOverlay.classList.remove('open');
+}
+
+document.getElementById('btn-shortcuts')?.addEventListener('click', openShortcuts);
+document.getElementById('btn-close-shortcuts')?.addEventListener('click', closeShortcuts);
+
+commandOverlay.addEventListener('click', (e) => {
+  if (e.target === commandOverlay) closeShortcuts();
+});
 
 // Tab Navigation logic
 document.querySelectorAll('.tab-btn').forEach((btn) => {
@@ -278,10 +295,10 @@ document.getElementById('btn-preset-ramp')?.addEventListener('click', () => {
   const width = container.clientWidth;
   const height = container.clientHeight;
 
-  // Add static ramp
+  // Static ramp
   const ramp = new RigidBody({
     position: new Vector2(width / 3, height / 2 + 50),
-    angle: Math.PI / 6, // 30 degrees
+    angle: Math.PI / 6,
     shape: new BoxShape(350, 20),
     isStatic: true,
     friction: 0.2,
@@ -289,7 +306,7 @@ document.getElementById('btn-preset-ramp')?.addEventListener('click', () => {
   });
   world.addBody(ramp);
 
-  // Add box at top of ramp
+  // Box on top
   const box = new RigidBody({
     position: new Vector2(width / 3 - 100, height / 2 - 80),
     angle: Math.PI / 6,
@@ -323,11 +340,35 @@ slowMoBtn.addEventListener('click', () => {
   slowMoBtn.style.color = isSlowMo ? '#38bdf8' : '#e2e8f0';
 });
 
-document.getElementById('btn-flip-g')?.addEventListener('click', () => {
+function invertGravity() {
   world.gravity = world.gravity.scale(-1);
   const valEl = document.getElementById('gravity-val')!;
   valEl.textContent = world.gravity.y.toFixed(1);
   (document.getElementById('slider-gravity') as HTMLInputElement).value = world.gravity.y.toString();
+}
+
+document.getElementById('btn-flip-g')?.addEventListener('click', invertGravity);
+
+// Keyboard Shortcuts
+window.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    if (commandOverlay.classList.contains('open')) closeShortcuts();
+    else openShortcuts();
+  } else if (e.code === 'Escape') {
+    closeShortcuts();
+  } else if (e.code === 'Space') {
+    isPaused = !isPaused;
+    pauseBtn.textContent = isPaused ? '▶ Play' : '⏸ Pause';
+  } else if (e.code === 'KeyC') {
+    world.clear();
+    updateStaticBoundaries(container.clientWidth, container.clientHeight);
+  } else if (e.code === 'KeyG') {
+    invertGravity();
+  } else if (e.code === 'KeyS') {
+    isSlowMo = !isSlowMo;
+    slowMoBtn.style.color = isSlowMo ? '#38bdf8' : '#e2e8f0';
+  }
 });
 
 // Sliders
@@ -416,6 +457,7 @@ function loop(now: number) {
   if (now - lastFpsUpdate >= 500) {
     const fps = Math.round((frameCount * 1000) / (now - lastFpsUpdate));
     fpsEl.textContent = fps.toString();
+    headerFpsEl.textContent = `${fps} FPS`;
     frameCount = 0;
     lastFpsUpdate = now;
   }

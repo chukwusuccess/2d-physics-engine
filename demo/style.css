@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
+:root {
+  /* Emil Kowalski's custom easing curves */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -52,6 +59,11 @@ body, html {
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 14px rgba(59, 130, 246, 0.4);
+  transition: transform 180ms var(--ease-out);
+}
+
+.brand:hover .brand-badge {
+  transform: scale(1.05) rotate(3deg);
 }
 
 .brand-title {
@@ -138,11 +150,13 @@ body, html {
   border: none;
   border-bottom: 2px solid transparent;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 160ms var(--ease-out), border-color 160ms var(--ease-out), background-color 160ms var(--ease-out);
 }
 
-.tab-btn:hover {
-  color: #cbd5e1;
+@media (hover: hover) and (pointer: fine) {
+  .tab-btn:hover {
+    color: #cbd5e1;
+  }
 }
 
 .tab-btn.active {
@@ -164,10 +178,15 @@ body, html {
   display: none;
   flex-direction: column;
   gap: 16px;
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
 }
 
 .tab-pane.active {
   display: flex;
+  opacity: 1;
+  transform: scale(1);
 }
 
 .section-title {
@@ -184,6 +203,7 @@ body, html {
   gap: 8px;
 }
 
+/* Emil's Tactile Responsive Buttons */
 .btn {
   padding: 9px 12px;
   font-size: 0.82rem;
@@ -193,32 +213,37 @@ body, html {
   background: rgba(30, 41, 59, 0.6);
   color: #e2e8f0;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: transform 160ms var(--ease-out), background-color 160ms var(--ease-out), border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
 }
 
-.btn:hover {
-  background: rgba(51, 65, 85, 0.8);
-  border-color: rgba(255, 255, 255, 0.18);
-  transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    background: rgba(51, 65, 85, 0.8);
+    border-color: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
+  }
 }
 
 .btn:active {
-  transform: scale(0.98);
+  transform: scale(0.96) !important;
 }
 
 .btn-primary {
   background: linear-gradient(135deg, #2563eb, #3b82f6);
   border-color: #3b82f6;
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 
-.btn-primary:hover {
-  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+  }
 }
 
 .btn-danger {
@@ -227,9 +252,11 @@ body, html {
   color: #fda4af;
 }
 
-.btn-danger:hover {
-  background: rgba(225, 29, 72, 0.3);
-  color: #ffffff;
+@media (hover: hover) and (pointer: fine) {
+  .btn-danger:hover {
+    background: rgba(225, 29, 72, 0.3);
+    color: #ffffff;
+  }
 }
 
 .control-group {
@@ -256,6 +283,8 @@ input[type="range"] {
   background: #1e293b;
   height: 6px;
   border-radius: 3px;
+  cursor: pointer;
+  transition: background 150ms var(--ease-out);
 }
 
 .toggle-group {
@@ -268,6 +297,14 @@ input[type="range"] {
   border: 1px solid rgba(255, 255, 255, 0.05);
   font-size: 0.82rem;
   color: #cbd5e1;
+  transition: border-color 150ms var(--ease-out), background-color 150ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .toggle-group:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(30, 41, 59, 0.6);
+  }
 }
 
 .toggle-group input[type="checkbox"] {
@@ -285,6 +322,13 @@ select {
   background: #1e293b;
   color: #f1f5f9;
   font-size: 0.82rem;
+  cursor: pointer;
+  transition: border-color 150ms var(--ease-out);
+}
+
+select:focus {
+  outline: none;
+  border-color: #3b82f6;
 }
 
 /* Canvas Area */
@@ -317,6 +361,7 @@ canvas {
   gap: 8px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
   z-index: 10;
+  transition: transform 200ms var(--ease-out);
 }
 
 .hud-btn {
@@ -331,12 +376,18 @@ canvas {
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: all 0.15s ease;
+  transition: transform 160ms var(--ease-out), background-color 160ms var(--ease-out), color 160ms var(--ease-out);
 }
 
-.hud-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+@media (hover: hover) and (pointer: fine) {
+  .hud-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+}
+
+.hud-btn:active {
+  transform: scale(0.95);
 }
 
 .hud-divider {
@@ -379,12 +430,77 @@ canvas {
   color: #38bdf8;
 }
 
+/* Emil's Modal & Popover Animation (Scale 0.95 + Opacity 0 -> Scale 1 + Opacity 1) */
+.command-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms var(--ease-out);
+}
+
+.command-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.command-modal {
+  width: 440px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  transform: scale(0.95);
+  transform-origin: center;
+  transition: transform 200ms var(--ease-out);
+}
+
+.command-overlay.open .command-modal {
+  transform: scale(1);
+}
+
+.command-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.command-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.command-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.command-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
 kbd {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 4px;
   padding: 2px 6px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   color: #f1f5f9;
 }
