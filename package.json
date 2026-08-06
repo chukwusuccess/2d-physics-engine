@@ -1,11 +1,24 @@
 {
   "name": "2d-physics-engine",
   "version": "1.0.0",
-  "description": "Modular 2D Rigid Body Physics Engine with SAT and Impulse Solver",
+  "description": "Modular 2D Rigid Body Physics Engine with Separating Axis Theorem (SAT) & Impulse Solver",
   "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite demo",
-    "build": "tsc && vite build demo --outDir dist",
+    "build": "tsc && vite build demo --outDir dist-demo",
+    "build:lib": "tsc",
     "test": "vitest run"
   },
   "devDependencies": {
@@ -14,3 +27,4 @@
     "vitest": "^1.0.0"
   }
 }
+
