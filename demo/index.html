@@ -3,130 +3,170 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>2D Physics Engine Lab - SAT & Impulse Solver</title>
+    <title>PhysX 2D Engine Lab - SAT & Impulse Solver</title>
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
     <div id="app">
-      <div id="sidebar">
+      <!-- Top Header -->
+      <header id="header">
         <div class="brand">
-          <div class="brand-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div class="brand-badge">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polygon points="12 2 2 7 12 12 22 7 12 2" />
               <polyline points="2 17 12 22 22 17" />
               <polyline points="2 12 12 17 22 12" />
             </svg>
           </div>
           <div class="brand-title">
-            <h1>PhysX 2D Engine</h1>
-            <p>SAT & Impulse Dynamics</p>
+            <span>PhysX 2D Laboratory</span>
+            <span class="brand-tag">v1.0.0</span>
           </div>
         </div>
 
-        <div class="stats-card">
-          <div class="stat-item">
-            <span class="stat-label">FPS</span>
-            <span class="stat-value" id="stat-fps">60</span>
+        <div class="header-actions">
+          <div class="status-pill">
+            <span class="status-dot"></span>
+            <span>60 FPS</span>
           </div>
-          <div class="stat-item">
-            <span class="stat-label">Bodies</span>
-            <span class="stat-value" id="stat-bodies">0</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Collisions</span>
-            <span class="stat-value" id="stat-collisions">0</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Solver (ms)</span>
-            <span class="stat-value" id="stat-time">0.2</span>
-          </div>
+          <a href="https://github.com/chukwusuccess/2d-physics-engine" target="_blank" rel="noopener" class="btn" style="padding: 6px 12px; font-size: 0.78rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+            GitHub
+          </a>
         </div>
+      </header>
 
-        <div class="section">
-          <span class="section-title">Spawn Objects</span>
-          <div class="grid-2">
-            <button class="btn btn-primary" id="btn-add-circle">🔴 Circle</button>
-            <button class="btn btn-primary" id="btn-add-box">🟦 Box</button>
-            <button class="btn" id="btn-add-stack">🧱 Box Stack</button>
-            <button class="btn" id="btn-add-pyramid">🔺 Pyramid</button>
+      <!-- Main Layout -->
+      <div id="main-view">
+        <!-- Sidebar Controls -->
+        <aside id="sidebar">
+          <div class="tabs-nav">
+            <button class="tab-btn active" data-tab="tab-spawn">🛠 Spawn</button>
+            <button class="tab-btn" data-tab="tab-physics">⚙ Physics</button>
+            <button class="tab-btn" data-tab="tab-render">👁 Visuals</button>
           </div>
-        </div>
 
-        <div class="section">
-          <span class="section-title">Presets & World</span>
-          <div class="grid-2">
-            <button class="btn" id="btn-preset-cradle">🎾 Cradle</button>
-            <button class="btn btn-danger" id="btn-clear">🗑 Clear All</button>
-          </div>
-        </div>
+          <div class="tab-content">
+            <!-- Tab 1: Spawn & Presets -->
+            <div class="tab-pane active" id="tab-spawn">
+              <span class="section-title">Add Rigid Bodies</span>
+              <div class="grid-2">
+                <button class="btn btn-primary" id="btn-add-circle">🔴 Circle</button>
+                <button class="btn btn-primary" id="btn-add-box">🟦 Box</button>
+                <button class="btn" id="btn-add-stack">🧱 Box Stack</button>
+                <button class="btn" id="btn-add-pyramid">🔺 Pyramid</button>
+              </div>
 
-        <div class="section">
-          <span class="section-title">Simulation Parameters</span>
-          
-          <div class="control-group">
-            <div class="control-label">
-              <span>Gravity Y</span>
-              <span id="gravity-val">490.5</span>
+              <span class="section-title">Physics Demos</span>
+              <div class="grid-2">
+                <button class="btn" id="btn-preset-cradle">🎾 Newton's Cradle</button>
+                <button class="btn" id="btn-preset-ramp">📐 Slanted Ramp</button>
+              </div>
+
+              <span class="section-title">World Actions</span>
+              <button class="btn btn-danger" id="btn-clear">🗑 Clear All Bodies</button>
             </div>
-            <input type="range" id="slider-gravity" min="-1000" max="1500" value="490.5" step="10" />
-          </div>
 
-          <div class="control-group">
-            <div class="control-label">
-              <span>Restitution (Bounciness)</span>
-              <span id="restitution-val">0.6</span>
+            <!-- Tab 2: Physics Parameters -->
+            <div class="tab-pane" id="tab-physics">
+              <div class="control-group">
+                <div class="control-label">
+                  <span>Gravity (Y-axis)</span>
+                  <span id="gravity-val">490.5</span>
+                </div>
+                <input type="range" id="slider-gravity" min="-1000" max="1500" value="490.5" step="10" />
+              </div>
+
+              <div class="control-group">
+                <div class="control-label">
+                  <span>Restitution (Bounciness)</span>
+                  <span id="restitution-val">0.60</span>
+                </div>
+                <input type="range" id="slider-restitution" min="0" max="1" value="0.6" step="0.05" />
+              </div>
+
+              <div class="control-group">
+                <div class="control-label">
+                  <span>Surface Friction</span>
+                  <span id="friction-val">0.30</span>
+                </div>
+                <input type="range" id="slider-friction" min="0" max="1" value="0.3" step="0.05" />
+              </div>
+
+              <div class="control-group">
+                <div class="control-label">
+                  <span>Solver Iterations</span>
+                  <span id="iterations-val">8</span>
+                </div>
+                <input type="range" id="slider-iterations" min="1" max="25" value="8" step="1" />
+              </div>
             </div>
-            <input type="range" id="slider-restitution" min="0" max="1" value="0.6" step="0.05" />
-          </div>
 
-          <div class="control-group">
-            <div class="control-label">
-              <span>Friction</span>
-              <span id="friction-val">0.3</span>
+            <!-- Tab 3: Visuals & Debug -->
+            <div class="tab-pane" id="tab-render">
+              <span class="section-title">Debug Overlays</span>
+              <div class="toggle-group">
+                <label for="toggle-contacts">Contact Points</label>
+                <input type="checkbox" id="toggle-contacts" checked />
+              </div>
+              <div class="toggle-group">
+                <label for="toggle-normals">Normals</label>
+                <input type="checkbox" id="toggle-normals" checked />
+              </div>
+              <div class="toggle-group">
+                <label for="toggle-velocities">Velocities</label>
+                <input type="checkbox" id="toggle-velocities" />
+              </div>
+              <div class="toggle-group">
+                <label for="toggle-trails">Motion Trails</label>
+                <input type="checkbox" id="toggle-trails" />
+              </div>
+
+              <span class="section-title">Render Theme</span>
+              <select id="select-theme">
+                <option value="neon" selected>Neon Electric</option>
+                <option value="cyan">Cyan Tech</option>
+                <option value="monochrome">Monochrome Slate</option>
+              </select>
             </div>
-            <input type="range" id="slider-friction" min="0" max="1" value="0.3" step="0.05" />
           </div>
+        </aside>
 
-          <div class="control-group">
-            <div class="control-label">
-              <span>Solver Iterations</span>
-              <span id="iterations-val">8</span>
+        <!-- Canvas View -->
+        <main id="canvas-container">
+          <canvas id="canvas"></canvas>
+
+          <!-- Top-Right Performance Stats -->
+          <div id="stats-hud">
+            <div class="stat-box">
+              <span class="stat-label">FPS</span>
+              <span class="stat-value" id="stat-fps">60</span>
             </div>
-            <input type="range" id="slider-iterations" min="1" max="20" value="8" step="1" />
+            <div class="stat-box">
+              <span class="stat-label">Bodies</span>
+              <span class="stat-value" id="stat-bodies">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Collisions</span>
+              <span class="stat-value" id="stat-collisions">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Solve (ms)</span>
+              <span class="stat-value" id="stat-time">0.2</span>
+            </div>
           </div>
-        </div>
 
-        <div class="section">
-          <span class="section-title">Debug Visualizations</span>
-          <div class="toggle-group">
-            <label for="toggle-contacts">Contact Points</label>
-            <input type="checkbox" id="toggle-contacts" checked />
+          <!-- Bottom Floating Action Bar -->
+          <div id="hud-bar">
+            <button class="hud-btn" id="btn-pause">⏸ Pause</button>
+            <button class="hud-btn" id="btn-step">⏭ Step</button>
+            <div class="hud-divider"></div>
+            <button class="hud-btn" id="btn-slowmo">🐢 Slow-Mo</button>
+            <button class="hud-btn" id="btn-flip-g">🔄 Invert G</button>
           </div>
-          <div class="toggle-group">
-            <label for="toggle-normals">Normals</label>
-            <input type="checkbox" id="toggle-normals" checked />
-          </div>
-          <div class="toggle-group">
-            <label for="toggle-velocities">Velocities</label>
-            <input type="checkbox" id="toggle-velocities" />
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="grid-2">
-            <button class="btn" id="btn-pause">⏸ Pause</button>
-            <button class="btn" id="btn-step">⏭ Step</button>
-          </div>
-        </div>
-      </div>
-
-      <div id="canvas-container">
-        <canvas id="canvas"></canvas>
-        <div id="instructions">
-          <span><kbd>Left Click + Drag</kbd> Move / Throw Body</span>
-          <span><kbd>Space</kbd> Pause/Resume</span>
-          <span><kbd>C</kbd> Clear</span>
-        </div>
+        </main>
       </div>
     </div>
 

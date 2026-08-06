@@ -11,6 +11,7 @@ const world = new World();
 const renderer = new CanvasRenderer(canvas);
 
 let isPaused = false;
+let isSlowMo = false;
 let globalRestitution = 0.6;
 let globalFriction = 0.3;
 
@@ -18,15 +19,29 @@ const renderOptions: RenderOptions = {
   showContactPoints: true,
   showNormals: true,
   showVelocities: false,
+  showTrails: false,
+  theme: 'neon',
 };
 
-// UI Stats elements
+// UI Elements
 const fpsEl = document.getElementById('stat-fps')!;
 const bodiesEl = document.getElementById('stat-bodies')!;
 const collisionsEl = document.getElementById('stat-collisions')!;
 const timeEl = document.getElementById('stat-time')!;
 
-// Resize handling
+// Tab Navigation logic
+document.querySelectorAll('.tab-btn').forEach((btn) => {
+  btn.addEventListener('click', (e) => {
+    const target = (e.currentTarget as HTMLElement).getAttribute('data-tab')!;
+    document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach((p) => p.classList.remove('active'));
+
+    (e.currentTarget as HTMLElement).classList.add('active');
+    document.getElementById(target)?.classList.add('active');
+  });
+});
+
+// Resize boundaries
 function resize() {
   const width = container.clientWidth;
   const height = container.clientHeight;
@@ -73,16 +88,17 @@ function updateStaticBoundaries(width: number, height: number) {
   world.addBody(rightWallBody);
 }
 
-// Initial Spawn Scene
+// Initial Scene
 function spawnInitialScene() {
   const width = container.clientWidth;
-  
-  // Spawn a stack of boxes
+  const height = container.clientHeight;
+
   const boxSize = 36;
   const startX = width / 2;
-  const startY = container.clientHeight - 80;
+  const startY = height - 80;
 
-  for (let i = 0; i < 7; i++) {
+  // Stack
+  for (let i = 0; i < 6; i++) {
     const box = new RigidBody({
       position: new Vector2(startX + (Math.random() * 2 - 1), startY - i * (boxSize + 2)),
       shape: new BoxShape(boxSize, boxSize),
@@ -93,11 +109,11 @@ function spawnInitialScene() {
     world.addBody(box);
   }
 
-  // Spawn some bouncy circles
+  // Bouncing Circles
   for (let i = 0; i < 5; i++) {
     const radius = 16 + Math.random() * 12;
     const circle = new RigidBody({
-      position: new Vector2(startX - 150 + i * 40, 100 + i * 30),
+      position: new Vector2(startX - 160 + i * 42, 100 + i * 30),
       shape: new CircleShape(radius),
       mass: radius * 0.1,
       restitution: 0.8,
@@ -107,7 +123,7 @@ function spawnInitialScene() {
   }
 }
 
-// Mouse interaction (Drag and Throw)
+// Mouse interaction
 let selectedBody: RigidBody | null = null;
 let mousePos = Vector2.zero();
 let lastMousePos = Vector2.zero();
@@ -118,7 +134,6 @@ canvas.addEventListener('mousedown', (e) => {
   mousePos = new Vector2(e.clientX - rect.left, e.clientY - rect.top);
   lastMousePos = mousePos.clone();
 
-  // Find clicked body
   for (let i = world.bodies.length - 1; i >= 0; i--) {
     const body = world.bodies[i];
     if (body.isStatic) continue;
@@ -175,7 +190,7 @@ function isPointInPolygon(point: Vector2, verts: Vector2[]): boolean {
   return inside;
 }
 
-// UI Controls & Listeners
+// Button listeners
 document.getElementById('btn-add-circle')?.addEventListener('click', () => {
   const radius = 18 + Math.random() * 12;
   const body = new RigidBody({
@@ -259,11 +274,39 @@ document.getElementById('btn-preset-cradle')?.addEventListener('click', () => {
   }
 });
 
+document.getElementById('btn-preset-ramp')?.addEventListener('click', () => {
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+
+  // Add static ramp
+  const ramp = new RigidBody({
+    position: new Vector2(width / 3, height / 2 + 50),
+    angle: Math.PI / 6, // 30 degrees
+    shape: new BoxShape(350, 20),
+    isStatic: true,
+    friction: 0.2,
+    restitution: 0.5,
+  });
+  world.addBody(ramp);
+
+  // Add box at top of ramp
+  const box = new RigidBody({
+    position: new Vector2(width / 3 - 100, height / 2 - 80),
+    angle: Math.PI / 6,
+    shape: new BoxShape(36, 36),
+    mass: 2.0,
+    friction: 0.2,
+    restitution: 0.4,
+  });
+  world.addBody(box);
+});
+
 document.getElementById('btn-clear')?.addEventListener('click', () => {
   world.clear();
   updateStaticBoundaries(container.clientWidth, container.clientHeight);
 });
 
+// HUD Actions
 const pauseBtn = document.getElementById('btn-pause')!;
 pauseBtn.addEventListener('click', () => {
   isPaused = !isPaused;
@@ -272,6 +315,19 @@ pauseBtn.addEventListener('click', () => {
 
 document.getElementById('btn-step')?.addEventListener('click', () => {
   world.step(1 / 60);
+});
+
+const slowMoBtn = document.getElementById('btn-slowmo')!;
+slowMoBtn.addEventListener('click', () => {
+  isSlowMo = !isSlowMo;
+  slowMoBtn.style.color = isSlowMo ? '#38bdf8' : '#e2e8f0';
+});
+
+document.getElementById('btn-flip-g')?.addEventListener('click', () => {
+  world.gravity = world.gravity.scale(-1);
+  const valEl = document.getElementById('gravity-val')!;
+  valEl.textContent = world.gravity.y.toFixed(1);
+  (document.getElementById('slider-gravity') as HTMLInputElement).value = world.gravity.y.toString();
 });
 
 // Sliders
@@ -311,7 +367,7 @@ iterationsSlider.addEventListener('input', () => {
   iterationsVal.textContent = val.toString();
 });
 
-// Debug Checkboxes
+// Toggles & Theme
 (document.getElementById('toggle-contacts') as HTMLInputElement).addEventListener('change', (e) => {
   renderOptions.showContactPoints = (e.target as HTMLInputElement).checked;
 });
@@ -321,36 +377,31 @@ iterationsSlider.addEventListener('input', () => {
 (document.getElementById('toggle-velocities') as HTMLInputElement).addEventListener('change', (e) => {
   renderOptions.showVelocities = (e.target as HTMLInputElement).checked;
 });
-
-// Keyboard shortcuts
-window.addEventListener('keydown', (e) => {
-  if (e.code === 'Space') {
-    isPaused = !isPaused;
-    pauseBtn.textContent = isPaused ? '▶ Play' : '⏸ Pause';
-  } else if (e.code === 'KeyC') {
-    world.clear();
-    updateStaticBoundaries(container.clientWidth, container.clientHeight);
-  }
+(document.getElementById('toggle-trails') as HTMLInputElement).addEventListener('change', (e) => {
+  renderOptions.showTrails = (e.target as HTMLInputElement).checked;
+});
+(document.getElementById('select-theme') as HTMLSelectElement).addEventListener('change', (e) => {
+  renderOptions.theme = (e.target as HTMLSelectElement).value as any;
 });
 
-// Initialize
+// Init
 window.addEventListener('resize', resize);
 resize();
 spawnInitialScene();
 
-// Main Loop
+// Loop
 let lastTime = performance.now();
 let frameCount = 0;
 let lastFpsUpdate = performance.now();
 
 function loop(now: number) {
-  const dt = Math.min((now - lastTime) / 1000, 0.033);
+  let dt = Math.min((now - lastTime) / 1000, 0.033);
+  if (isSlowMo) dt *= 0.25;
   lastTime = now;
 
-  // Mouse drag spring effect
   if (selectedBody && isDragging) {
     const dist = mousePos.sub(selectedBody.position);
-    selectedBody.velocity = dist.scale(15); // Drive body towards mouse
+    selectedBody.velocity = dist.scale(15);
   }
 
   const stepStart = performance.now();
@@ -361,7 +412,6 @@ function loop(now: number) {
 
   renderer.render(world, renderOptions, selectedBody);
 
-  // Update UI Stats
   frameCount++;
   if (now - lastFpsUpdate >= 500) {
     const fps = Math.round((frameCount * 1000) / (now - lastFpsUpdate));

@@ -18,79 +18,163 @@ body, html {
 
 #app {
   display: flex;
+  flex-direction: column;
   width: 100vw;
   height: 100vh;
 }
 
-#canvas-container {
-  flex: 1;
-  position: relative;
-  height: 100%;
-}
-
-canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-/* Glassmorphism Control Panel Sidebar */
-#sidebar {
-  width: 340px;
-  background: rgba(15, 23, 42, 0.75);
+/* Top Glass Header */
+#header {
+  height: 56px;
+  background: rgba(15, 23, 42, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
-  flex-direction: column;
-  padding: 20px;
-  gap: 20px;
-  overflow-y: auto;
-  z-index: 10;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 20;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.brand-icon {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 16px rgba(59, 130, 246, 0.4);
-}
-
-.brand-title h1 {
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  background: linear-gradient(to right, #ffffff, #94a3b8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.brand-title p {
-  font-size: 0.75rem;
-  color: #64748b;
-}
-
-.section {
-  display: flex;
-  flex-direction: column;
   gap: 10px;
 }
 
-.section-title {
+.brand-badge {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.4);
+}
+
+.brand-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-tag {
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: #94a3b8;
+  background: rgba(30, 41, 59, 0.5);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+/* Main Container */
+#main-view {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Left Sidebar Controls */
+#sidebar {
+  width: 320px;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+/* Navigation Tabs */
+.tabs-nav {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(2, 6, 23, 0.4);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 12px 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: #cbd5e1;
+}
+
+.tab-btn.active {
+  color: #38bdf8;
+  border-bottom-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.05);
+}
+
+.tab-content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tab-pane {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tab-pane.active {
+  display: flex;
+}
+
+.section-title {
+  font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   color: #64748b;
 }
 
@@ -101,15 +185,15 @@ canvas {
 }
 
 .btn {
-  padding: 10px 14px;
-  font-size: 0.85rem;
+  padding: 9px 12px;
+  font-size: 0.82rem;
   font-weight: 500;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(30, 41, 59, 0.6);
   color: #e2e8f0;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -118,8 +202,12 @@ canvas {
 
 .btn:hover {
   background: rgba(51, 65, 85, 0.8);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.18);
   transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: scale(0.98);
 }
 
 .btn-primary {
@@ -131,17 +219,16 @@ canvas {
 
 .btn-primary:hover {
   background: linear-gradient(135deg, #1d4ed8, #2563eb);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
 }
 
 .btn-danger {
-  background: rgba(225, 29, 72, 0.2);
-  border-color: rgba(225, 29, 72, 0.4);
+  background: rgba(225, 29, 72, 0.15);
+  border-color: rgba(225, 29, 72, 0.3);
   color: #fda4af;
 }
 
 .btn-danger:hover {
-  background: rgba(225, 29, 72, 0.4);
+  background: rgba(225, 29, 72, 0.3);
   color: #ffffff;
 }
 
@@ -154,7 +241,7 @@ canvas {
 .control-label {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #94a3b8;
 }
 
@@ -179,7 +266,7 @@ input[type="range"] {
   background: rgba(30, 41, 59, 0.4);
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: #cbd5e1;
 }
 
@@ -190,64 +277,114 @@ input[type="range"] {
   cursor: pointer;
 }
 
-.stats-card {
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 12px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  font-family: 'JetBrains Mono', monospace;
+select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1e293b;
+  color: #f1f5f9;
+  font-size: 0.82rem;
 }
 
-.stat-item {
+/* Canvas Area */
+#canvas-container {
+  flex: 1;
+  position: relative;
+  height: 100%;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Floating Bottom Control Bar */
+#hud-bar {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 40px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.hud-btn {
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: none;
+  background: transparent;
+  color: #e2e8f0;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.hud-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.hud-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Floating Top-Right Stats HUD */
+#stats-hud {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  gap: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  z-index: 10;
+}
+
+.stat-box {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
 .stat-label {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   color: #64748b;
   text-transform: uppercase;
 }
 
 .stat-value {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #38bdf8;
 }
 
-/* Floating overlay instructions */
-#instructions {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(12px);
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 0.8rem;
-  color: #94a3b8;
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
-
-#instructions span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
 kbd {
-  background: #1e293b;
+  background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 4px;
   padding: 2px 6px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: #f1f5f9;
 }
