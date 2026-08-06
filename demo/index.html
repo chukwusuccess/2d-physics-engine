@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2D Physics Engine Lab - SAT & Impulse Solver</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="sidebar">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 2 7 12 12 22 7 12 2" />
+              <polyline points="2 17 12 22 22 17" />
+              <polyline points="2 12 12 17 22 12" />
+            </svg>
+          </div>
+          <div class="brand-title">
+            <h1>PhysX 2D Engine</h1>
+            <p>SAT & Impulse Dynamics</p>
+          </div>
+        </div>
+
+        <div class="stats-card">
+          <div class="stat-item">
+            <span class="stat-label">FPS</span>
+            <span class="stat-value" id="stat-fps">60</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Bodies</span>
+            <span class="stat-value" id="stat-bodies">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Collisions</span>
+            <span class="stat-value" id="stat-collisions">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Solver (ms)</span>
+            <span class="stat-value" id="stat-time">0.2</span>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-title">Spawn Objects</span>
+          <div class="grid-2">
+            <button class="btn btn-primary" id="btn-add-circle">🔴 Circle</button>
+            <button class="btn btn-primary" id="btn-add-box">🟦 Box</button>
+            <button class="btn" id="btn-add-stack">🧱 Box Stack</button>
+            <button class="btn" id="btn-add-pyramid">🔺 Pyramid</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-title">Presets & World</span>
+          <div class="grid-2">
+            <button class="btn" id="btn-preset-cradle">🎾 Cradle</button>
+            <button class="btn btn-danger" id="btn-clear">🗑 Clear All</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-title">Simulation Parameters</span>
+          
+          <div class="control-group">
+            <div class="control-label">
+              <span>Gravity Y</span>
+              <span id="gravity-val">490.5</span>
+            </div>
+            <input type="range" id="slider-gravity" min="-1000" max="1500" value="490.5" step="10" />
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Restitution (Bounciness)</span>
+              <span id="restitution-val">0.6</span>
+            </div>
+            <input type="range" id="slider-restitution" min="0" max="1" value="0.6" step="0.05" />
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Friction</span>
+              <span id="friction-val">0.3</span>
+            </div>
+            <input type="range" id="slider-friction" min="0" max="1" value="0.3" step="0.05" />
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Solver Iterations</span>
+              <span id="iterations-val">8</span>
+            </div>
+            <input type="range" id="slider-iterations" min="1" max="20" value="8" step="1" />
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-title">Debug Visualizations</span>
+          <div class="toggle-group">
+            <label for="toggle-contacts">Contact Points</label>
+            <input type="checkbox" id="toggle-contacts" checked />
+          </div>
+          <div class="toggle-group">
+            <label for="toggle-normals">Normals</label>
+            <input type="checkbox" id="toggle-normals" checked />
+          </div>
+          <div class="toggle-group">
+            <label for="toggle-velocities">Velocities</label>
+            <input type="checkbox" id="toggle-velocities" />
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="grid-2">
+            <button class="btn" id="btn-pause">⏸ Pause</button>
+            <button class="btn" id="btn-step">⏭ Step</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div id="instructions">
+          <span><kbd>Left Click + Drag</kbd> Move / Throw Body</span>
+          <span><kbd>Space</kbd> Pause/Resume</span>
+          <span><kbd>C</kbd> Clear</span>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
