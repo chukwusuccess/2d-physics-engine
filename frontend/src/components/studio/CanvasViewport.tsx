@@ -1,14 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import { World, CanvasRenderer, RigidBody, CircleShape, BoxShape, Vector2 } from '@engine';
 import { useStudioStore } from '../../store/useStudioStore';
 import { Play, Pause, FastForward, Clock, ArrowsDownUp } from '@phosphor-icons/react';
 
-
-interface CanvasViewportProps {
-  onEngineReady?: (world: World, renderer: CanvasRenderer) => void;
+export interface CanvasViewportHandle {
+  addCircle: () => void;
+  addBox: () => void;
+  addStack: () => void;
+  addPyramid: () => void;
+  presetCradle: () => void;
+  presetRamp: () => void;
+  clear: () => void;
 }
 
-export const CanvasViewport: React.FC<CanvasViewportProps> = () => {
+export const CanvasViewport = forwardRef<CanvasViewportHandle>((_, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -69,6 +74,134 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = () => {
     world.addBody(rightWallRef.current);
   };
 
+  // Expose methods to parent App
+  useImperativeHandle(ref, () => ({
+    addCircle: () => {
+      const container = containerRef.current;
+      const w = container ? container.clientWidth : 800;
+      const radius = 18 + Math.random() * 12;
+      const body = new RigidBody({
+        position: new Vector2(w / 2 + (Math.random() * 100 - 50), 80),
+        shape: new CircleShape(radius),
+        mass: radius * 0.1,
+        restitution: useStudioStore.getState().restitution,
+        friction: useStudioStore.getState().friction,
+      });
+      worldRef.current.addBody(body);
+    },
+    addBox: () => {
+      const container = containerRef.current;
+      const w = container ? container.clientWidth : 800;
+      const size = 32 + Math.floor(Math.random() * 16);
+      const body = new RigidBody({
+        position: new Vector2(w / 2 + (Math.random() * 100 - 50), 80),
+        shape: new BoxShape(size, size),
+        mass: 1.5,
+        restitution: useStudioStore.getState().restitution,
+        friction: useStudioStore.getState().friction,
+      });
+      worldRef.current.addBody(body);
+    },
+    addStack: () => {
+      const container = containerRef.current;
+      const w = container ? container.clientWidth : 800;
+      const h = container ? container.clientHeight : 600;
+      const boxSize = 32;
+      const startX = w / 2;
+      const startY = h - 80;
+
+      for (let i = 0; i < 5; i++) {
+        const box = new RigidBody({
+          position: new Vector2(startX, startY - i * (boxSize + 2)),
+          shape: new BoxShape(boxSize, boxSize),
+          mass: 1.0,
+          restitution: useStudioStore.getState().restitution,
+          friction: useStudioStore.getState().friction,
+        });
+        worldRef.current.addBody(box);
+      }
+    },
+    addPyramid: () => {
+      const container = containerRef.current;
+      const w = container ? container.clientWidth : 800;
+      const h = container ? container.clientHeight : 600;
+      const boxSize = 30;
+      const rows = 4;
+      const startX = w / 2;
+      const startY = h - 80;
+
+      for (let row = 0; row < rows; row++) {
+        const count = rows - row;
+        const rowX = startX - (count * (boxSize + 2)) / 2 + boxSize / 2;
+        for (let i = 0; i < count; i++) {
+          const box = new RigidBody({
+            position: new Vector2(rowX + i * (boxSize + 2), startY - row * (boxSize + 2)),
+            shape: new BoxShape(boxSize, boxSize),
+            mass: 1.0,
+            restitution: useStudioStore.getState().restitution,
+            friction: useStudioStore.getState().friction,
+          });
+          worldRef.current.addBody(box);
+        }
+      }
+    },
+    presetCradle: () => {
+      const container = containerRef.current;
+      const w = container ? container.clientWidth : 800;
+      const h = container ? container.clientHeight : 600;
+      const radius = 20;
+      const startX = w / 2 - 100;
+      const startY = h / 2;
+
+      for (let i = 0; i < 5; i++) {
+        const circle = new RigidBody({
+          position: new Vector2(startX + i * (radius * 2.1), startY),
+          shape: new CircleShape(radius),
+          mass: 1.0,
+          restitution: 1.0,
+          friction: 0.0,
+        });
+        if (i === 0) {
+          circle.position.x -= 60;
+          circle.position.y -= 40;
+        }
+        worldRef.current.addBody(circle);
+      }
+    },
+    presetRamp: () => {
+      const container = containerRef.current;
+      const w = container ? container.clientWidth : 800;
+      const h = container ? container.clientHeight : 600;
+
+      const ramp = new RigidBody({
+        position: new Vector2(w / 3, h / 2 + 50),
+        angle: Math.PI / 6,
+        shape: new BoxShape(350, 20),
+        isStatic: true,
+        friction: 0.2,
+        restitution: 0.5,
+      });
+      worldRef.current.addBody(ramp);
+
+      const box = new RigidBody({
+        position: new Vector2(w / 3 - 100, h / 2 - 80),
+        angle: Math.PI / 6,
+        shape: new BoxShape(36, 36),
+        mass: 2.0,
+        friction: 0.2,
+        restitution: 0.4,
+      });
+      worldRef.current.addBody(box);
+    },
+    clear: () => {
+      worldRef.current.clear();
+      const container = containerRef.current;
+      if (container) {
+        updateBoundaries(container.clientWidth, container.clientHeight);
+      }
+    },
+  }));
+
   // Sync store settings to world
   useEffect(() => {
     worldRef.current.gravity = new Vector2(0, store.gravityY);
@@ -98,7 +231,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = () => {
     window.addEventListener('resize', handleResize);
     handleResize();
 
-    // Spawn initial scene
+    // Initial Scene
     const w = container.clientWidth;
     const h = container.clientHeight;
     const boxSize = 36;
@@ -128,7 +261,6 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = () => {
       worldRef.current.addBody(circle);
     }
 
-    // Animation Loop
     let animationFrameId: number;
     let lastTime = performance.now();
     let frameCount = 0;
@@ -139,7 +271,6 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = () => {
       if (useStudioStore.getState().isSlowMo) dt *= 0.25;
       lastTime = now;
 
-      // Mouse drag spring velocity
       if (selectedBodyRef.current && isDraggingRef.current) {
         const dist = mousePosRef.current.sub(selectedBodyRef.current.position);
         selectedBodyRef.current.velocity = dist.scale(15);
@@ -186,7 +317,6 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = () => {
     };
   }, []);
 
-  // Mouse Listeners
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -234,7 +364,6 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = () => {
         className="w-full h-full block cursor-crosshair"
       />
 
-      {/* Top-Right Telemetry HUD */}
       <div className="absolute top-4 right-4 bg-slate-900/85 backdrop-blur-md border border-white/10 rounded-xl p-3 flex gap-4 font-mono z-10 shadow-lg">
         <div className="flex flex-col gap-0.5">
           <span className="text-[10px] uppercase text-slate-500 font-semibold">FPS</span>
@@ -254,7 +383,6 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = () => {
         </div>
       </div>
 
-      {/* Floating Bottom HUD */}
       <div className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-slate-900/85 backdrop-blur-md border border-white/15 rounded-full px-3 py-1.5 flex items-center gap-2 shadow-2xl z-10">
         <button
           onClick={store.togglePaused}
@@ -281,7 +409,6 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = () => {
           }`}
         >
           <Clock size={14} />
-
           <span>Slow-Mo</span>
         </button>
 
@@ -295,7 +422,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = () => {
       </div>
     </main>
   );
-};
+});
 
 function isPointInsideBody(point: Vector2, body: RigidBody): boolean {
   const shape = body.shape;
